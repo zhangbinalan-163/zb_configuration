@@ -55,11 +55,12 @@ public class PropertiesConfig extends FileConfig {
 
 	@Override
 	public void load() throws ConfigException {
+		InputStream is = null;
 		try {
-			InputStream is = new FileInputStream(configFile);
+			is = new FileInputStream(configFile);
 			Properties p = new Properties();
 			p.load(is);
-			is.close();
+
 			if (prop != null) {
 				prop.clear();
 			}
@@ -70,6 +71,14 @@ public class PropertiesConfig extends FileConfig {
 			throw new ConfigFileNotExsistException(getConfigPath());
 		} catch (IOException e) {
 			throw new ConfigException(e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }
