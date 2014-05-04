@@ -26,7 +26,12 @@ public class PropertiesConfig extends FileConfig {
 	private Properties prop;
 
 	public PropertiesConfig(String filePath) throws ConfigException {
-		super(filePath);
+		this(filePath, true);
+	}
+
+	public PropertiesConfig(String configPath, boolean autoCheck)
+			throws ConfigException {
+		super(configPath, autoCheck);
 	}
 
 	@Override

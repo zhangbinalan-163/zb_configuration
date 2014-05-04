@@ -17,6 +17,8 @@ public abstract class AbstractConfig implements Config {
 	private String configPath;
 	// 最近修改时间
 	private long lastModifiedTime;
+	//是否需要监控修改情况
+	private boolean autoCheck=false;
 
 	private static String DELIMITER = ",";
 
@@ -34,10 +36,18 @@ public abstract class AbstractConfig implements Config {
 	public String getConfigPath(){
 		return configPath;
 	}
-	public AbstractConfig(String configPath) throws ConfigException{
+	
+	public AbstractConfig(String configPath) throws ConfigException {
+		this(configPath,true);
+	}
+
+	public AbstractConfig(String configPath,boolean autoCheck) throws ConfigException{
 		this.configPath=configPath;
+		this.autoCheck=autoCheck;
 		init();
-		ConfigManager.addConfig(this);
+		if(this.autoCheck){
+			ConfigManager.addConfig(this);
+		}
 	}
 	@Override
 	public void checkAndLoad() throws ConfigException {

@@ -10,7 +10,12 @@ public abstract class FileConfig extends AbstractConfig {
 	protected File configFile;
 
 	public FileConfig(String filePath) throws ConfigException {
-		super(filePath);
+		this(filePath,true);
+	}
+
+	public FileConfig(String configPath, boolean autoCheck)
+			throws ConfigException {
+		super(configPath, autoCheck);
 	}
 
 	@Override
