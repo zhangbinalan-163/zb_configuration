@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -20,10 +21,18 @@ import com.zhangbin.common.config.exception.ConfigNotFoundException;
  * 
  */
 public class PropertiesConfig extends FileConfig {
+	// 1、假设如果我们创建properties文件用的encoding是UTF-8，我们写入了中文
+	// 2、Properties文件默认机制是采用ISO8859-1处理
+	// 3、我们用Properties.getProperty(String
+	// key)接口读取内容，这是时候得到的是乱码。因为想用ISO8859-1对GBK编码的内容进行解码
+	// 4、我们把用Properties.getProperty(String
+	// key)接口读取内容转换为创建properties文件时用的encoding（UTF-8）
+
 	private static Logger logger = LoggerFactory
 			.getLogger(PropertiesConfig.class);
 
 	private Properties prop;
+	private String targetCode;
 
 	public PropertiesConfig(String filePath) throws ConfigException {
 		this(filePath, true);
@@ -43,6 +52,13 @@ public class PropertiesConfig extends FileConfig {
 		if (value == null || "".equals(value)) {
 			throw new ConfigNotFoundException(key);
 		}
+		if (value != null && !"".equals(value)) {
+			if (targetCode != null) {
+				value = new String(
+						value.getBytes(Charset.forName("ISO-8859-1")),
+						Charset.forName(targetCode));
+			}
+		}
 		return value;
 	}
 
@@ -53,6 +69,13 @@ public class PropertiesConfig extends FileConfig {
 			String tmp = prop.getProperty(key);
 			if (tmp != null && !"".equals(tmp)) {
 				value = tmp;
+			}
+		}
+		if (value != null && !"".equals(value)) {
+			if (targetCode != null) {
+				value = new String(
+						value.getBytes(Charset.forName("ISO-8859-1")),
+						Charset.forName(targetCode));
 			}
 		}
 		return value;
@@ -85,5 +108,13 @@ public class PropertiesConfig extends FileConfig {
 				}
 			}
 		}
+	}
+
+	public String getTargetCode() {
+		return targetCode;
+	}
+
+	public void setTargetCode(String targetCode) {
+		this.targetCode = targetCode;
 	}
 }
